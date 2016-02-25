@@ -25,6 +25,7 @@
 <%@ page import = "org.xml.sax.helpers.DefaultHandler" %>
 
 <b>Beginning QA data creation...</b> <br/><br/>
+<%out.flush();%>
 
 <b>&nbsp;&nbsp;&nbsp;&nbsp;Beginning initialization code</b> <br/>
 <%
@@ -68,7 +69,7 @@
 	Folder qaDemoReuterNewsFolder = folderApi.createFolders("/reuternews/", qaDemoHost, systemUser, false);
 
 	// m.qademo.dotcms.com
-	Host mobileQaDemoHost = hostApi.findByName("m.qashared.dotcms.com", systemUser, false);
+	Host mobileQaDemoHost = hostApi.findByName("m.qademo.dotcms.com", systemUser, false);
 	Folder mobileQaDemoReuterNewsFolder = folderApi.createFolders("/reuternews/", mobileQaDemoHost, systemUser, false);
 
 	//qashared.dotcms.com
@@ -82,6 +83,7 @@
 
 <br/><b>&nbsp;&nbsp;&nbsp;&nbsp;Container and Template Creation</b><br/>
 <%
+	out.flush();
 	Container container1 = createDefaultContainerIfDoesNotExist("QA Default Container 1", systemUser, qaSharedHost);
 	List<Container> containerList = new ArrayList<Container>();
 	containerList.add(container1);
@@ -102,34 +104,152 @@
 <br/><b>&nbsp;&nbsp;&nbsp;&nbsp;Reuters Category Creation</b><br/>
 <%
 	Category topicsParent = createCategoryIfDoesNotExist(null, "QA Reuters Topics", "QAReutersTopics", "qareuterstopics", "qareuterstopics", systemUser);
-	createSubCategoriesFromFile(topicsParent, "/Users/brent/dotcms/testingautomation/Reuters21578/all-topics-strings.lc.txt", systemUser);
+	createSubCategoriesFromFile(topicsParent, "/Users/brent/dotcms/repos/bankvue/load-testing/reutersnewsstoryload/Reuters21578/all-topics-strings.lc.txt", systemUser);
 
 	Category placesParent = createCategoryIfDoesNotExist(null, "QA Reuters Places", "QAReutersPlaces", "qareutersplaces", "qareuterplaces", systemUser);
-	createSubCategoriesFromFile(placesParent, "/Users/brent/dotcms/testingautomation/Reuters21578/all-places-strings.lc.txt", systemUser);
+	createSubCategoriesFromFile(placesParent, "/Users/brent/dotcms/repos/bankvue/load-testing/reutersnewsstoryload/Reuters21578/all-places-strings.lc.txt", systemUser);
 
 	Category peopleParent = createCategoryIfDoesNotExist(null, "QA Reuters People", "QAReutersPeople", "qareuterspeople", "qareuterspeople", systemUser);
-	createSubCategoriesFromFile(peopleParent, "/Users/brent/dotcms/testingautomation/Reuters21578/all-people-strings.lc.txt", systemUser);
+	createSubCategoriesFromFile(peopleParent, "/Users/brent/dotcms/repos/bankvue/load-testing/reutersnewsstoryload/Reuters21578/all-people-strings.lc.txt", systemUser);
 
 	Category orgsParent = createCategoryIfDoesNotExist(null, "QA Reuters Orgs", "QAReutersOrgs", "qareutersorgs", "qareutersorgs", systemUser);
-	createSubCategoriesFromFile(orgsParent, "/Users/brent/dotcms/testingautomation/Reuters21578/all-orgs-strings.lc.txt", systemUser);
+	createSubCategoriesFromFile(orgsParent, "/Users/brent/dotcms/repos/bankvue/load-testing/reutersnewsstoryload/Reuters21578/all-orgs-strings.lc.txt", systemUser);
 
 	Category exchangesParent = createCategoryIfDoesNotExist(null, "QA Reuters Exchanges", "QAReutersExchanges", "qareutersexchange", "qareutersexchanges", systemUser);
-	createSubCategoriesFromFile(exchangesParent, "/Users/brent/dotcms/testingautomation/Reuters21578/all-exchanges-strings.lc.txt", systemUser);
+	createSubCategoriesFromFile(exchangesParent, "/Users/brent/dotcms/repos/bankvue/load-testing/reutersnewsstoryload/Reuters21578/all-exchanges-strings.lc.txt", systemUser);
 
 	out.flush();
 %>
-<%--
-<br/><b>&nbsp;&nbsp;&nbsp;&nbsp;Load Reuters News Articles</b><br/>
+<br/><b>&nbsp;&nbsp;&nbsp;&nbsp;Create Reuters News Structure</b><br/>
 <%
+	out.flush();
+	String structureVarname = "reutersnews";
+	String structureDesc = "Reuters News Desc";
+
+	Structure reutersStruct = StructureFactory.getStructureByVelocityVarName(structureVarname);
+	if(!(structureDesc.equals(reutersStruct)))
+	{
+		System.out.println("*** Creating reuters structure ***");
+		reutersStruct.setName(structureVarname);
+		reutersStruct.setVelocityVarName(structureVarname);
+		reutersStruct.setDescription(structureDesc);
+		reutersStruct.setDefaultStructure(false);
+		reutersStruct.setFixed(false);
+		StructureFactory.saveStructure(reutersStruct);
+
+		Field field = new Field();
+		field.setDefaultValue("");
+		field.setFieldContentlet("text1");
+		field.setFieldName("title");
+		field.setFieldType(Field.FieldType.TEXT.toString());
+		field.setHint("");
+		field.setRegexCheck("");
+		field.setRequired(true);
+		field.setSortOrder(0);
+		field.setStructureInode(reutersStruct.getInode());
+		field.setFieldRelationType("");
+		field.setVelocityVarName("title");
+		field.setIndexed(true);
+		field.setSearchable(true);
+		field.setListed(true);
+		field.setFixed(false);
+		field.setReadOnly(false);
+		FieldFactory.saveField(field);
+
+		field = new Field();
+		field.setDefaultValue("");
+		field.setFieldContentlet("text2");
+		field.setFieldName("urltitle");
+		field.setFieldType(Field.FieldType.TEXT.toString());
+		field.setHint("");
+		field.setRegexCheck("");
+		field.setRequired(true);
+		field.setSortOrder(1);
+		field.setStructureInode(reutersStruct.getInode());
+		field.setFieldRelationType("");
+		field.setVelocityVarName("urltitle");
+		field.setIndexed(true);
+		field.setSearchable(true);
+		field.setListed(true);
+		field.setFixed(false);
+		field.setReadOnly(false);
+		FieldFactory.saveField(field);
+
+		field = new Field();
+		field.setDefaultValue("");
+		field.setFieldContentlet("date1");
+		field.setFieldName("publishdate");
+		field.setFieldType(Field.FieldType.DATE.toString());
+		field.setHint("");
+		field.setRegexCheck("");
+		field.setRequired(false);
+		field.setSortOrder(2);
+		field.setStructureInode(reutersStruct.getInode());
+		field.setFieldRelationType("");
+		field.setVelocityVarName("publishdate");
+		field.setIndexed(false);
+		field.setSearchable(false);
+		field.setListed(false);
+		field.setFixed(false);
+		field.setReadOnly(false);
+		FieldFactory.saveField(field);
+
+		field = new Field ();
+		field.setDefaultValue("");
+		field.setFieldContentlet("text_area1");
+		field.setFieldName("body");
+		field.setFieldType(Field.FieldType.TEXT_AREA.toString());
+		field.setHint("");
+		field.setRegexCheck("");
+		field.setRequired(true);
+		field.setSortOrder(3);
+		field.setStructureInode(reutersStruct.getInode());
+		field.setFieldRelationType("");
+		field.setVelocityVarName("body");
+		field.setIndexed(true);
+		field.setSearchable(true);
+		field.setListed(false);
+		field.setFixed(false);
+		field.setReadOnly(false);
+		FieldFactory.saveField(field);
+
+		field = new Field ();
+		field.setDefaultValue("");
+		field.setFieldContentlet("system_field1");
+		field.setFieldName("host");
+		field.setFieldType(Field.FieldType.HOST_OR_FOLDER.toString());
+		field.setHint("");
+		field.setRegexCheck("");
+		field.setRequired(true);
+		field.setSortOrder(4);
+		field.setStructureInode(reutersStruct.getInode());
+		field.setFieldRelationType("");
+		field.setVelocityVarName("host1");
+		field.setIndexed(false);
+		field.setSearchable(false);
+		field.setListed(false);
+		field.setFixed(false);
+		field.setReadOnly(false);
+		FieldFactory.saveField(field);
+	}
+%>
+
+<br/><b>&nbsp;&nbsp;&nbsp;&nbsp;Load Reuters News Articles</b><br/>
+
+<%
+	out.flush();
 	try {
 		SAXParserFactory factory = SAXParserFactory.newInstance();
 		SAXParser saxParser = factory.newSAXParser();
+		System.out.println("saxParser - name =" + saxParser.getClass().getName());
+		System.out.println("saxParser - simple name =" + saxParser.getClass().getSimpleName());
+		System.out.println("saxParser - canonical name =" + saxParser.getClass().getCanonicalName());
 		
 		DefaultHandler handler = new DefaultHandler() {
 			ContentletAPI conAPI = APILocator.getContentletAPI();
 			User systemUser = APILocator.getUserAPI().getSystemUser();
 			User adminUser = null;
-			Structure struct = StructureFactory.getStructureByVelocityVarName("ReuterNews");
+			Structure struct = StructureFactory.getStructureByVelocityVarName("reutersnews");
 			Host host = APILocator.getHostAPI().findByName("qademo.dotcms.com", systemUser, false);
 			Host systemHost = APILocator.getHostAPI().findSystemHost();
 
@@ -338,8 +458,7 @@
 			}
 		};
 
-		saxParser.parse("/Users/brent/dotcms/testingautomation/Reuters21578/reuters21578.xml", handler);
-//		saxParser.parse("/Users/brent/dotcms/testingautomation/Reuters21578/reuters1.xml", handler);
+		saxParser.parse(new File("/Users/brent/dotcms/repos/bankvue/load-testing/reutersnewsstoryload/Reuters21578/reuters21578.xml"), handler);
 
 //		System.out.println("articleCount=" + new Integer(articleCount));
 
@@ -351,9 +470,10 @@
 
 	out.flush();
 %>
---%>
-<b><br/>Finished QA data creation</b>
 
+
+<b><br/>Finished QA data creation</b>
+<%out.flush();%>
 <%!
 public void createSubCategoriesFromFile(Category parent, String filename, User user) {
 	BufferedReader br = null;
@@ -414,8 +534,11 @@ public Exception createHostIfDoesNotExist(String hostName, User user, boolean re
 		if(host == null) {
 			host = new Host();
 			host.setHostname(hostName);
-			hostAPI.save(host, user, respectFrontendRoles);
+			host = hostAPI.save(host, user, respectFrontendRoles);
 		}	
+		
+		hostAPI.publish(host, user, respectFrontendRoles);
+
 	}
 	catch(Exception e) {
 		retValue = e;
@@ -438,7 +561,7 @@ public Container createDefaultContainerIfDoesNotExist(String title, User user, H
 		retValue.setTitle(title);
 		retValue.setFriendlyName("Displays page content");
 		retValue.setMaxContentlets(25);
-		retValue.setStructureInode(StructureFactory.getDefaultStructure().getInode());
+		//retValue.setStructureInode(StructureFactory.getDefaultStructure().getInode());
 		retValue.setCode("#dotedit($CONTENT_INODE, $body)\r\n");
 		retValue.setNotes("This container display the body field of the content type Page Content.");
 		WebAssetFactory.createAsset(retValue, user.getUserId(), host);
