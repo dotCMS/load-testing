@@ -1,5 +1,4 @@
 <%@ page language = "java" %>
-<%@ page import = "java.io.*" %>
 <%@ page import = "java.util.*" %>
 <%@ page import = "com.dotmarketing.business.*" %>
 <%@ page import = "com.dotmarketing.factories.*" %>
@@ -24,6 +23,8 @@
 <%@ page import = "org.xml.sax.Attributes" %>
 <%@ page import = "org.xml.sax.SAXException" %>
 <%@ page import = "org.xml.sax.helpers.DefaultHandler" %>
+<%@ page import = "com.dotcms.repackage.org.apache.commons.io.FileUtils" %>
+<%@ page import = "com.dotmarketing.portlets.files.model.File" %>
 
 <%
 	out.println("<b>Beginning QA data creation...</b> <br/><br/>");
@@ -43,6 +44,10 @@
 			break;
 		}
 	}
+	System.out.println("adminUser=" + adminUser);
+	if(adminUser != null) {
+		System.out.println("adminUser.getUserId()=" + adminUser.getUserId());
+	}
 	Host systemHost = hostApi.findSystemHost();
 	out.println("<b>&nbsp;&nbsp;&nbsp;&nbsp;Finished initialization code</b><br/>");
 
@@ -60,13 +65,25 @@
 	out.println("<br/><b>&nbsp;&nbsp;&nbsp;&nbsp;Folder Creation</b><br/>");
 	out.flush();
 	Host demoHost = hostApi.findByName("demo.dotcms.com", systemUser, false);
-	Folder reuterNewsFolder = folderApi.createFolders("/reuternews/", demoHost, systemUser, false);
+	Folder reutersNewsFolder = folderApi.createFolders("/reuternews/", demoHost, systemUser, false);
+	System.out.println("reutersNewsFolder.getHostId() = " + reutersNewsFolder.getHostId());
 
 
+	out.println("<br/><b>&nbsp;&nbsp;&nbsp;&nbsp;Asset Creation</b><br/>");
+	out.flush();
+	File fileAsset = new File();
+	fileAsset.setTitle("reuters-detail.vtl");
+	fileAsset.setFileName("reuters-detail.vtl");
+	fileAsset.setModUser(adminUser.getUserId());
+	fileAsset.setMimeType("text");
+	java.io.File file = new java.io.File("/Users/brent/dotcms/repos/bankvue/load-testing/reutersnewsstoryload/reuters-detail.vtl");
+	APILocator.getFileAPI().saveFile(fileAsset, file, reutersNewsFolder, adminUser, false);
+
+
+	/*
 	out.println("<br/><b>&nbsp;&nbsp;&nbsp;&nbsp;Container and Template Creation</b><br/>");
 	out.flush();
 
-	/*
 	Container container1 = createDefaultContainerIfDoesNotExist("QA Default Container 1", systemUser, qaSharedHost);	
 	createTemplateIfDoesNotExist("QA Blank Template", "QA Blank Template Friendly Name", qaSharedHost, systemUser, containerList);
 	*/
@@ -103,10 +120,10 @@
 
 <%!
 public void createSubCategoriesFromFile(Category parent, String filename, User user) {
-	BufferedReader br = null;
+	java.io.BufferedReader br = null;
 	String line = null;
 	try{
-		br = new BufferedReader(new FileReader(filename));
+		br = new java.io.BufferedReader(new java.io.FileReader(filename));
 		while((line = br.readLine()) != null) {
 			if(!line.trim().isEmpty()) {
 				createCategoryIfDoesNotExist(parent, line, line, line, line, user);
@@ -121,7 +138,7 @@ public void createSubCategoriesFromFile(Category parent, String filename, User u
 			try{
 				br.close();
 			}
-			catch(IOException e){
+			catch(java.io.IOException e){
 				br = null;
 				e.printStackTrace();
 			}
@@ -565,7 +582,7 @@ public void createReutersNewsArticles(String filename) {
 			}
 		};
 
-		saxParser.parse(new File(filename), handler);
+		saxParser.parse(new java.io.File(filename), handler);
 
 //		System.out.println("articleCount=" + new Integer(articleCount));
 
