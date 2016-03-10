@@ -18,13 +18,14 @@
 <%@ page import = "com.dotmarketing.beans.*" %>
 <%@ page import = "com.dotmarketing.exception.*" %>
 <%@ page import = "com.liferay.portal.model.User" %>
+<%@ page import = "com.liferay.util.FileUtil" %>
 <%@ page import = "javax.xml.parsers.SAXParser" %>
 <%@ page import = "javax.xml.parsers.SAXParserFactory" %>
 <%@ page import = "org.xml.sax.Attributes" %>
 <%@ page import = "org.xml.sax.SAXException" %>
 <%@ page import = "org.xml.sax.helpers.DefaultHandler" %>
-<%@ page import = "com.dotcms.repackage.org.apache.commons.io.FileUtils" %>
-<%@ page import = "com.dotmarketing.portlets.files.model.File" %>
+<%@ page import="java.io.File" %>
+<%@ page import="java.io.FileNotFoundException" %>
 
 <%
 	out.println("<b>Beginning QA data creation...</b> <br/><br/>");
@@ -71,13 +72,16 @@
 
 	out.println("<br/><b>&nbsp;&nbsp;&nbsp;&nbsp;Asset Creation</b><br/>");
 	out.flush();
-	File fileAsset = new File();
-	fileAsset.setTitle("reuters-detail.vtl");
-	fileAsset.setFileName("reuters-detail.vtl");
-	fileAsset.setModUser(adminUser.getUserId());
-	fileAsset.setMimeType("text");
-	java.io.File file = new java.io.File("/Users/brent/dotcms/repos/bankvue/load-testing/reutersnewsstoryload/reuters-detail.vtl");
-	APILocator.getFileAPI().saveFile(fileAsset, file, reutersNewsFolder, adminUser, false);
+
+	try {
+		String filename = "/Users/brent/dotcms/repos/autotest/load-testing/reutersnewsstoryload/contentForInitialLoading/qashared.dotcms.com/vtl/widgets/reuters-news-detail-body.vtl";
+		createFileAsset(filename, "demo.dotcms.com", reutersNewsFolder.getInode(), 1, "reuters-news-detail-body.vtl", adminUser);
+	}
+	catch (Exception e) {
+		e.printStackTrace();
+		out.println("&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;ERROR  - " + e.getMessage());
+		out.flush();
+	}
 
 
 	/*
@@ -92,15 +96,15 @@
 	out.println("<br/><b>&nbsp;&nbsp;&nbsp;&nbsp;Reuters Category Creation</b><br/>");
 	out.flush();
 	Category topicsParent = createCategoryIfDoesNotExist(null, "QA Reuters Topics", "QAReutersTopics", "qareuterstopics", "qareuterstopics", systemUser);
-	createSubCategoriesFromFile(topicsParent, "/Users/brent/dotcms/repos/bankvue/load-testing/reutersnewsstoryload/Reuters21578/all-topics-strings.lc.txt", systemUser);
+	createSubCategoriesFromFile(topicsParent, "/Users/brent/dotcms/repos/autotest/load-testing/reutersnewsstoryload/Reuters21578/all-topics-strings.lc.txt", systemUser);
 	Category placesParent = createCategoryIfDoesNotExist(null, "QA Reuters Places", "QAReutersPlaces", "qareutersplaces", "qareuterplaces", systemUser);
-	createSubCategoriesFromFile(placesParent, "/Users/brent/dotcms/repos/bankvue/load-testing/reutersnewsstoryload/Reuters21578/all-places-strings.lc.txt", systemUser);
+	createSubCategoriesFromFile(placesParent, "/Users/brent/dotcms/repos/autotest/load-testing/reutersnewsstoryload/Reuters21578/all-places-strings.lc.txt", systemUser);
 	Category peopleParent = createCategoryIfDoesNotExist(null, "QA Reuters People", "QAReutersPeople", "qareuterspeople", "qareuterspeople", systemUser);
-	createSubCategoriesFromFile(peopleParent, "/Users/brent/dotcms/repos/bankvue/load-testing/reutersnewsstoryload/Reuters21578/all-people-strings.lc.txt", systemUser);
+	createSubCategoriesFromFile(peopleParent, "/Users/brent/dotcms/repos/autotest/load-testing/reutersnewsstoryload/Reuters21578/all-people-strings.lc.txt", systemUser);
 	Category orgsParent = createCategoryIfDoesNotExist(null, "QA Reuters Orgs", "QAReutersOrgs", "qareutersorgs", "qareutersorgs", systemUser);
-	createSubCategoriesFromFile(orgsParent, "/Users/brent/dotcms/repos/bankvue/load-testing/reutersnewsstoryload/Reuters21578/all-orgs-strings.lc.txt", systemUser);
+	createSubCategoriesFromFile(orgsParent, "/Users/brent/dotcms/repos/autotest/load-testing/reutersnewsstoryload/Reuters21578/all-orgs-strings.lc.txt", systemUser);
 	Category exchangesParent = createCategoryIfDoesNotExist(null, "QA Reuters Exchanges", "QAReutersExchanges", "qareutersexchange", "qareutersexchanges", systemUser);
-	createSubCategoriesFromFile(exchangesParent, "/Users/brent/dotcms/repos/bankvue/load-testing/reutersnewsstoryload/Reuters21578/all-exchanges-strings.lc.txt", systemUser);
+	createSubCategoriesFromFile(exchangesParent, "/Users/brent/dotcms/repos/autotest/load-testing/reutersnewsstoryload/Reuters21578/all-exchanges-strings.lc.txt", systemUser);
 
 
 	out.println("<br/><b>&nbsp;&nbsp;&nbsp;&nbsp;Create Reuters News Structure</b><br/>");
@@ -110,7 +114,7 @@
 
 	out.println("<br/><b>&nbsp;&nbsp;&nbsp;&nbsp;Load Reuters News Articles</b><br/>");
 	out.flush();
-	//createReutersNewsArticles("/Users/brent/dotcms/repos/bankvue/load-testing/reutersnewsstoryload/Reuters21578/reuters21578.xml");
+	//createReutersNewsArticles("/Users/brent/dotcms/repos/autotest/load-testing/reutersnewsstoryload/Reuters21578/reuters21578.xml");
 
 
 	out.println("<b><br/>Finished QA data creation</b>");
@@ -119,6 +123,32 @@
 
 
 <%!
+public void createFileAsset(String fullFilename, String hostName, String folderInode, int languageId, String title, User user) throws Exception {
+	java.io.File srcFile = new java.io.File(fullFilename);
+	if(!srcFile.exists()) {
+		throw new FileNotFoundException("ERROR - file does not exist - " + srcFile.getAbsolutePath());
+	}
+	java.io.File tmpFile = File.createTempFile("temp", null);
+	System.out.println("tmpFile.getParent()=" + tmpFile.getParent());
+	System.out.println("srcFile.getName()=" + srcFile.getName());
+
+	java.io.File destFile = new File(tmpFile.getParent(), srcFile.getName());
+	System.out.println("destFile.getAbsolutePath()=" + destFile.getAbsolutePath());
+	FileUtil.copyFile(srcFile, destFile);
+	Structure fileStruct = StructureFactory.getStructureByVelocityVarName("FileAsset");
+	ContentletAPI conAPI = APILocator.getContentletAPI();
+	Contentlet con = new Contentlet();
+	con.setStructureInode(fileStruct.getInode());
+	con.setHost(hostName);
+	con.setFolder(folderInode);
+	con.setStringProperty("fileName", srcFile.getName());
+	con.setLanguageId(languageId);
+	con.setStringProperty("title", title);
+	con.setBinary("fileAsset", destFile);
+	con = conAPI.checkin(con, user, false);
+	conAPI.publish(con, user, false);
+}
+
 public void createSubCategoriesFromFile(Category parent, String filename, User user) {
 	java.io.BufferedReader br = null;
 	String line = null;
