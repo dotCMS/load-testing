@@ -1,8 +1,7 @@
-#if($URLMapContent.inode && $URLMapContent.publishdate.before($date.date))
+#if($URLMapContent.inode)
   <div class="news-header">
     #editContentlet($URLMapContent.inode)
     <h2>#dotedit($!URLMapContent.inode,$!URLMapContent.title)</h2>
-    <time datetime="$date.format('yyyy-MM-dd',$!URLMapContent.publishdate)T$date.format('hh:mm:ss',$!URLMapContent.publishdate)">$date.format('MMM dd yyyy',$!URLMapContent.publishdate) at $date.format('HH:mm z',$!URLMapContent.publishdate)</time>
     <div class="clear"></div>
   </div>
   
@@ -10,5 +9,5 @@
     #dotedit($!URLMapContent.inode,$!URLMapContent.body)
   </div>
 #else
-<h3>We are sorry, but the story you are looking for is no longer available. <a href="/news-events/news/">Click here to see all news stories</a>.</h3>
+<h3>We are sorry, but the story you are looking for is no longer available.</h3>
 #end
