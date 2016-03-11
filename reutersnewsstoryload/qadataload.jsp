@@ -81,6 +81,9 @@
 		vtlWidget = createVTLIncludeWidget("reutersNewsWidget", "demo.dotcms.com", vtlFile.getIdentifier(), 1, adminUser);
 		Template template = getTemplateByTitle(demoHost, "Quest - 1 Column");
 		htmlPage = createHTMLPage("detail page", template.getIdentifier() , "demo.dotcms.com", reutersNewsFolder.getInode(), 1, adminUser);
+		Container container = findContainerByTitle(demoHost, "Large Column (lg-1)");
+		MultiTree tree = new MultiTree(htmlPage.getIdentifier(), container.getIdentifier(), vtlWidget.getIdentifier());
+		MultiTreeFactory.saveMultiTree(tree, 1);
 	}
 	catch (Exception e) {
 		e.printStackTrace();
@@ -114,7 +117,10 @@
 
 	out.println("<br/><b>&nbsp;&nbsp;&nbsp;&nbsp;Create Reuters News Structure</b><br/>");
 	out.flush();
-	Structure reuterStruct = createReutersNewsStructureIfDoesNotExist();
+	String detailPageIdentifier = "";
+	if(htmlPage != null)
+		detailPageIdentifier = htmlPage.getIdentifier();
+	Structure reuterStruct = createReutersNewsStructureIfDoesNotExist(detailPageIdentifier);
 
 
 	out.println("<br/><b>&nbsp;&nbsp;&nbsp;&nbsp;Load Reuters News Articles</b><br/>");
@@ -265,14 +271,7 @@ public Exception createHostIfDoesNotExist(String hostName, User user, boolean re
 }
 
 public Container createDefaultContainerIfDoesNotExist(String title, User user, Host host) throws DotDataException, DotSecurityException, WebAssetException {
-	Container retValue = null;
-	List<Container> containerList = APILocator.getContainerAPI().findContainersUnder(host);
-	for(Container cont : containerList) {
-		if(cont.getTitle().equals(title) && cont.isArchived() == false) {
-			retValue = cont;
-			break;
-		}
-	}
+	Container retValue = findContainerByTitle(host, title);
 	
 	if(retValue == null) {
 		retValue = new Container();
@@ -323,7 +322,19 @@ public Template getTemplateByTitle(Host host, String title) throws DotDataExcept
 	return retValue;
 }
 
-public Structure createReutersNewsStructureIfDoesNotExist()  throws DotHibernateException {
+public Container findContainerByTitle(Host host, String title) throws DotDataException, DotSecurityException{
+	Container retValue = null;
+	List<Container> containerList = APILocator.getContainerAPI().findContainersUnder(host);
+	for(Container cont : containerList) {
+		if(cont.getTitle().equals(title) && cont.isArchived() == false) {
+			retValue = cont;
+			break;
+		}
+	}
+	return retValue;
+}
+
+public Structure createReutersNewsStructureIfDoesNotExist(String detailPageIdentifier)  throws DotHibernateException {
 String structureVarname = "reutersnews";
 	String structureDesc = "Reuters News Desc";
 
@@ -338,8 +349,8 @@ String structureVarname = "reutersnews";
 		reutersStruct.setDescription(structureDesc);
 		reutersStruct.setDefaultStructure(false);
 		reutersStruct.setFixed(false);
-		//reutersStruct.setDetailPage();
-		//reutersStruct.setUrlMapPattern();
+		reutersStruct.setDetailPage(detailPageIdentifier);
+		reutersStruct.setUrlMapPattern("/reutersnews/{urlTitle}");
 		StructureFactory.saveStructure(reutersStruct);
 
 		Field field = new Field();
