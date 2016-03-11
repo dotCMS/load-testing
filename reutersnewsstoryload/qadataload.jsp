@@ -66,16 +66,21 @@
 	out.println("<br/><b>&nbsp;&nbsp;&nbsp;&nbsp;Folder Creation</b><br/>");
 	out.flush();
 	Host demoHost = hostApi.findByName("demo.dotcms.com", systemUser, false);
-	Folder reutersNewsFolder = folderApi.createFolders("/reuternews/", demoHost, systemUser, false);
+	Folder reutersNewsFolder = folderApi.createFolders("/reutersnews/", demoHost, systemUser, false);
 	System.out.println("reutersNewsFolder.getHostId() = " + reutersNewsFolder.getHostId());
 
 
 	out.println("<br/><b>&nbsp;&nbsp;&nbsp;&nbsp;Asset Creation</b><br/>");
 	out.flush();
-
+	Contentlet vtlFile = null;
+	Contentlet vtlWidget = null;
+	Contentlet htmlPage = null;
 	try {
 		String filename = "/Users/brent/dotcms/repos/autotest/load-testing/reutersnewsstoryload/contentForInitialLoading/qashared.dotcms.com/vtl/widgets/reuters-news-detail-body.vtl";
-		createFileAsset(filename, "demo.dotcms.com", reutersNewsFolder.getInode(), 1, "reuters-news-detail-body.vtl", adminUser);
+		vtlFile = createFileAsset(filename, "demo.dotcms.com", reutersNewsFolder.getInode(), 1, "reuters-news-detail-body.vtl", adminUser);
+		vtlWidget = createVTLIncludeWidget("reutersNewsWidget", "demo.dotcms.com", vtlFile.getIdentifier(), 1, adminUser);
+		Template template = getTemplateByTitle(demoHost, "Quest - 1 Column");
+		htmlPage = createHTMLPage("detail page", template.getIdentifier() , "demo.dotcms.com", reutersNewsFolder.getInode(), 1, adminUser);
 	}
 	catch (Exception e) {
 		e.printStackTrace();
@@ -114,7 +119,7 @@
 
 	out.println("<br/><b>&nbsp;&nbsp;&nbsp;&nbsp;Load Reuters News Articles</b><br/>");
 	out.flush();
-	//createReutersNewsArticles("/Users/brent/dotcms/repos/autotest/load-testing/reutersnewsstoryload/Reuters21578/reuters21578.xml");
+	createReutersNewsArticles("/Users/brent/dotcms/repos/autotest/load-testing/reutersnewsstoryload/Reuters21578/reuters21578.xml");
 
 
 	out.println("<b><br/>Finished QA data creation</b>");
@@ -123,7 +128,45 @@
 
 
 <%!
-public void createFileAsset(String fullFilename, String hostName, String folderInode, int languageId, String title, User user) throws Exception {
+public Contentlet createHTMLPage(String title, String templateIdentifer, String hostName, String folderInode, int languageId, User user) throws Exception {
+	ContentletAPI conAPI = APILocator.getContentletAPI();
+	Contentlet con = new Contentlet();
+	con.setStructureInode(StructureFactory.getStructureByVelocityVarName("htmlpageasset").getInode());
+	con.setHost(hostName);
+	con.setStringProperty("title", title);
+	String urlTitle = title.toLowerCase();
+	urlTitle = urlTitle.replaceAll("^\\s+|\\s+$", "");
+	urlTitle = urlTitle.replaceAll("[^a-zA-Z 0-9]", " ");
+	urlTitle = urlTitle.replaceAll("\\s", "-");
+	urlTitle = urlTitle.replaceAll("--", "-");
+	while(urlTitle.lastIndexOf("-") == urlTitle.length() -1 ){
+		urlTitle=urlTitle.substring(0,urlTitle.length() -1);
+	}
+	con.setStringProperty("url", urlTitle);
+	con.setStringProperty("friendlyname", title);
+	con.setStringProperty("template", templateIdentifer);
+	con.setStringProperty("cachettl", "15");
+	con.setFolder(folderInode);
+	con.setLanguageId(languageId);
+	con = conAPI.checkin(con, user, false);
+	conAPI.publish(con, user, false);
+	return con;
+}
+
+public Contentlet createVTLIncludeWidget(String title, String hostName, String vtlFileIdentifier, int languageId, User user) throws Exception {
+	ContentletAPI conAPI = APILocator.getContentletAPI();
+	Contentlet con = new Contentlet();
+	con.setStructureInode(StructureFactory.getStructureByVelocityVarName("VtlInclude").getInode());
+	con.setHost(hostName);
+	con.setStringProperty("widgetTitle", title);
+	con.setStringProperty("vtlFile", vtlFileIdentifier);
+	con.setLanguageId(languageId);
+	con = conAPI.checkin(con, user, false);
+	conAPI.publish(con, user, false);
+	return con;
+}
+
+public Contentlet createFileAsset(String fullFilename, String hostName, String folderInode, int languageId, String title, User user) throws Exception {
 	java.io.File srcFile = new java.io.File(fullFilename);
 	if(!srcFile.exists()) {
 		throw new FileNotFoundException("ERROR - file does not exist - " + srcFile.getAbsolutePath());
@@ -147,6 +190,7 @@ public void createFileAsset(String fullFilename, String hostName, String folderI
 	con.setBinary("fileAsset", destFile);
 	con = conAPI.checkin(con, user, false);
 	conAPI.publish(con, user, false);
+	return con;
 }
 
 public void createSubCategoriesFromFile(Category parent, String filename, User user) {
@@ -245,17 +289,10 @@ public Container createDefaultContainerIfDoesNotExist(String title, User user, H
 }
 
 public Template createTemplateIfDoesNotExist(String title, String description, Host host, User user, List<Container> containerList) throws DotDataException, DotHibernateException, DotSecurityException, WebAssetException {
-	Template retValue = null;
-	TemplateAPI templateAPI = APILocator.getTemplateAPI();
-	List<Template> templateList = templateAPI.findTemplatesAssignedTo(host);
-	for(Template temp : templateList) {
-		if(temp.getTitle().equals(title) && temp.isArchived() == false) {
-			retValue = temp;
-			break;
-		}
-	}
+	Template retValue = getTemplateByTitle(host, title);
 	
 	if(retValue == null) {
+		TemplateAPI templateAPI = APILocator.getTemplateAPI();
 		Template blankTemplate = new Template();
 		blankTemplate.setTitle(title);
 		blankTemplate.setFriendlyName(description);
@@ -270,6 +307,19 @@ public Template createTemplateIfDoesNotExist(String title, String description, H
 		retValue = savedTemplate;
 	}
 	
+	return retValue;
+}
+
+public Template getTemplateByTitle(Host host, String title) throws DotDataException, DotSecurityException {
+	Template retValue = null;
+	TemplateAPI templateAPI = APILocator.getTemplateAPI();
+	List<Template> templateList = templateAPI.findTemplatesAssignedTo(host);
+	for(Template temp : templateList) {
+		if(temp.getTitle().equals(title) && !temp.isArchived()) {
+			retValue = temp;
+			break;
+		}
+	}
 	return retValue;
 }
 
@@ -288,6 +338,8 @@ String structureVarname = "reutersnews";
 		reutersStruct.setDescription(structureDesc);
 		reutersStruct.setDefaultStructure(false);
 		reutersStruct.setFixed(false);
+		//reutersStruct.setDetailPage();
+		//reutersStruct.setUrlMapPattern();
 		StructureFactory.saveStructure(reutersStruct);
 
 		Field field = new Field();
