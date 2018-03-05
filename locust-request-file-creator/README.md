@@ -1,5 +1,3 @@
-placeholder for Edson Santos work
-
 #Load tool: 
 
 ##https://locust.io #
@@ -39,3 +37,6 @@ where :
 -t = type
 
 JSON and/or CSV's files.
+
+
+
