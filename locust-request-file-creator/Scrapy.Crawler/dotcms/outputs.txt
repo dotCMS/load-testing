@@ -1,0 +1,10 @@
+OUTPUT :
+
+2018-03-05 09:16:07 [scrapy.downloadermiddlewares.robotstxt] DEBUG: Forbidden by robots.txt: <GET http://dotcms-430/products/>
+2018-03-05 09:16:07 [scrapy.downloadermiddlewares.robotstxt] DEBUG: Forbidden by robots.txt: <GET http://dotcms-430/resources/>
+
+
+
+# Obey robots.txt rules
+ROBOTSTXT_OBEY = False
+
