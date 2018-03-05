@@ -1,18 +1,18 @@
 #Load tool: 
 
-##https://locust.io #
+https://locust.io 
 
-#pip install locustio #
+pip install locustio 
 
 venv python3
 
-#Scrapy Tool:
+Scrapy Tool:
 
 https://scrapy.org
 
 venv python3
 
-## pip install scrapy ##
+pip install scrapy 
 
 File 1 
 
