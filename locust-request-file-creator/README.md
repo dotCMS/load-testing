@@ -30,6 +30,7 @@ File 2
 It has crawled/extracted the data described in the start_urls session and parsed along with ...dotcms/items.py file using xpath instructions.
 
 CMD :
+
 scrapy crawl getsite2 -o dotcms.csv -t csv
 
 scrapy crawl getsite2 -o dotcms.json -t json
