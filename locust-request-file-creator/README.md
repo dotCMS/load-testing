@@ -31,7 +31,9 @@ It has crawled/extracted the data described in the start_urls session and parsed
 
 CMD :
 scrapy crawl getsite2 -o dotcms.csv -t csv
+
 scrapy crawl getsite2 -o dotcms.json -t json
+
 where :
 -o = output
 -t = type
