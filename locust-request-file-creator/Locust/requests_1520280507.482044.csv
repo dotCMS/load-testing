@@ -1,0 +1,12 @@
+"Method","Name","# requests","# failures","Median response time","Average response time","Min response time","Max response time","Average Content Size","Requests/s"
+"GET","/",40,0,510,401,214,556,29209,0.14
+"GET","/about-us",65,2,340,472,296,1488,24632,0.22
+"GET","/bear-mountain",70,0,510,393,219,686,16065,0.24
+"GET","/blogs",8,1,620,561,305,710,25026,0.03
+"GET","/contact-us",30,0,590,528,294,1415,40905,0.10
+"POST","/dotAdmin",1,0,510,510,510,510,17665,0.00
+"GET","/go-quest",11,0,610,541,292,842,19900,0.04
+"GET","/products",14,1,600,494,292,736,26817,0.05
+"GET","/resources",17,0,600,501,235,935,22010,0.06
+"GET","/services",0,19,0,0,0,0,0,0.00
+"None","Total",256,23,520,455,235,1488,24638,0.88

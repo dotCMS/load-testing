@@ -1,0 +1,8 @@
+Count,Message,Traceback,Nodes
+430,Cannot choose from an empty sequence,"  File ""/usr/local/lib/python3.6/site-packages/locust/core.py"", line 268, in run
+    self.schedule_task(self.get_next_task())
+  File ""/usr/local/lib/python3.6/site-packages/locust/core.py"", line 329, in get_next_task
+    return random.choice(self.tasks)
+  File ""/usr/local/Cellar/python3/3.6.4_2/Frameworks/Python.framework/Versions/3.6/lib/python3.6/random.py"", line 258, in choice
+    raise IndexError('Cannot choose from an empty sequence') from None
+",local
