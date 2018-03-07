@@ -1,27 +1,27 @@
-#Load tool: 
+Load tool: 
 
-*https://locust.io*
+https://locust.io
 
-
-virtualenv -p python3 venv 
-
-source venv/bin/activate --> python3
-
-*pip install locustio *
-
-#Scrapy Tool:
-
-*https://scrapy.org*
 
 virtualenv -p python3 venv 
 
 source venv/bin/activate --> python3
 
+pip install locustio 
+
+Scrapy Tool:
+
+https://scrapy.org
+
 virtualenv -p python3 venv 
 
-*pip install scrapy *
+source venv/bin/activate --> python3
 
-#Case 1 - Fetch html page!
+virtualenv -p python3 venv 
+
+pip install scrapy 
+
+Case 1 - Fetch html page!
 
 File 1 
 .../spiders/getsite.py
@@ -30,9 +30,9 @@ It has crawled the whole html content from dotcms pages (.../products and .../re
 
 CMD :
 
-*scrapy crawl getsite *
+scrapy crawl getsite 
 
-#Case 2 - Crawl local dotcms installation with spider!
+Case 2 - Crawl local dotcms installation with spider!
 
 File 2
 .../spiders/getsite2.py
@@ -52,7 +52,7 @@ where :
 JSON and/or CSV's files.
 
 
-#Case 3 0 Crawk demo.dotcms with spider!
+Case 3 0 Crawl demo.dotcms with spider!
 
 
 ![Alt text](printscreen.png)
