@@ -67,4 +67,8 @@ CMD 2 (option to store data) in json file!
 
 scrapy crawl demodotcms -o demodotcms.json -t json
 
+- BEAUTIFULSOUP - UPDATE 03/11/2018
 
+Script collect_links.py updated and using beautiful_soup has scrapped demo.dotcms.com and saved into file.txt
+
+usage : python collect_links.py www.demo.dotcms.com file.txt
