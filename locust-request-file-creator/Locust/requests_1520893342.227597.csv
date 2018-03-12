@@ -1,0 +1,12 @@
+"Method","Name","# requests","# failures","Median response time","Average response time","Min response time","Max response time","Average Content Size","Requests/s"
+"GET","/",39,0,630,512,253,772,29233,0.24
+"GET","/about-us/our-team",33,0,710,595,329,1283,26118,0.20
+"GET","/bear-mountain",27,0,650,553,251,1064,16065,0.17
+"GET","/blogs",24,0,720,597,291,1133,25035,0.15
+"GET","/contact-us",28,1,420,606,324,1209,40913,0.17
+"GET","/demos/content-geolocation",54,0,630,507,243,780,34245,0.33
+"POST","/dotAdmin",4,0,680,680,632,726,17665,0.02
+"GET","/go-quest",19,0,740,716,366,1132,19910,0.12
+"GET","/products",18,0,380,508,344,851,26823,0.11
+"GET","/services/wealth-managers",14,1,380,559,336,826,24781,0.09
+"None","Total",260,2,640,563,243,1283,28116,1.60
