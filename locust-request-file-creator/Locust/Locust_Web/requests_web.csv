@@ -1,0 +1,21 @@
+"Method","Name","# requests","# failures","Median response time","Average response time","Min response time","Max response time","Average Content Size","Requests/s"
+"GET","/",61,1,1100,855,428,1647,29239,0.34
+"GET","/about-us",12,0,600,859,534,1502,24649,0.07
+"GET","/about-us/locations",26,1,1200,1128,618,1875,66452,0.15
+"GET","/about-us/our-team",31,0,770,970,550,2431,26139,0.17
+"GET","/contact-us",35,0,1300,1119,617,2517,40924,0.20
+"GET","/demos/containers",3,0,1100,1120,1018,1210,36439,0.02
+"GET","/demos/content-geolocation",23,0,1000,874,393,1268,34256,0.13
+"GET","/demos/mobile-apps",8,0,1100,1048,486,1172,20311,0.04
+"GET","/demos/remote-widget",5,0,460,530,331,1014,19541,0.03
+"GET","/demos/rest-content-save",6,0,1100,976,514,1314,28112,0.03
+"GET","/news-events/events",4,0,1300,1390,1138,1847,27852,0.02
+"GET","/news-events/news",32,1,1200,1089,584,1469,26609,0.18
+"GET","/resources",6,1,610,743,586,1186,22028,0.03
+"GET","/resources/images",6,1,530,946,427,1576,25153,0.03
+"GET","/resources/videos",34,2,880,825,313,1317,23435,0.19
+"GET","/services/first-time-investors",6,0,1100,1081,467,2070,21751,0.03
+"GET","/services/global-investors",4,1,1100,994,502,1216,27177,0.02
+"GET","/services/retirees",3,0,590,706,417,1108,21326,0.02
+"GET","/services/wealth-managers",20,0,1200,1026,479,1494,24781,0.11
+"None","Total",325,8,1100,963,313,2517,31438,1.82

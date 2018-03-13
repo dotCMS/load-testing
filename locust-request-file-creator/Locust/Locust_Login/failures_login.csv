@@ -1,0 +1,2 @@
+13	POST	/intranet	HTTPError('401 Client Error: Unauthorized for url: https://demo.dotcms.com:443/intranet/',)
+93	POST	/intranet	HTTPError('401 Client Error: Unauthorized for url: https://demo.dotcms.com:443/intranet',)

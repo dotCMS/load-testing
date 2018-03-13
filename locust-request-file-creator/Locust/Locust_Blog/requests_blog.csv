@@ -1,0 +1,6 @@
+"Method","Name","# requests","# failures","Median response time","Average response time","Min response time","Max response time","Average Content Size","Requests/s"
+"GET","/bear-mountain",28,1,1100,979,435,1592,16065,0.60
+"GET","/blogs",48,4,1400,1429,605,4600,25026,1.02
+"GET","/go-quest",78,1,1300,1219,524,4904,19900,1.66
+"GET","/products",7,0,1400,1325,699,1613,26817,0.15
+"None","Total",161,6,1300,1244,435,4904,21062,3.42
